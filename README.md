@@ -1,46 +1,66 @@
-# Li-MACE Graphene Reproducibility Archive
+# Li-MACE: Battery Machine Learning & Lithium DFT
 
-This archive accompanies the study of dilute Li adsorption and
-local-environment-dependent MACE transferability across pristine graphene,
-monovacancy graphene, divacancy graphene, Stone-Wales graphene, and a local
-Si4-graphene motif.
+**DFT benchmarks and machine-learned interatomic potentials for lithium on graphene-based battery materials.**
 
-The article combines spin-polarized VASP calculations, fine-tuning from the
-MACE-MPA-0 foundation model, and direct DFT force tests. The central distributed
-evidence comprises:
+How do graphene defects change lithium binding, and where does MACE fine-tuning
+improve atomic forces? Li-MACE brings together DFT reference calculations,
+trained models, and configuration-resolved benchmarks to answer these questions.
 
-- 273 DFT training labels with a strict final-electronic-iteration audit;
-- five relaxed reference structures with final-force, magnetic-moment, and
-  source-hash evidence, together with their final coordinates;
-- 15 fixed-geometry PBE-D3(BJ)/dipole adsorption checks, with three
-  prespecified Li placements in each structural family;
-- 25 model-blind DFT perturbations balanced across the five families;
-- nine strictly converged high-displacement DFT frames used for direct
-  foundation-versus-fine-tuned force comparisons;
-- seven additional converged DFT snapshot checks used as coverage evidence;
-- only completed molecular-dynamics trajectories in the distributed trajectory
-  tables.
+**[Download Supplementary Data (21 MB)](https://github.com/xiaohuang-6/Li-MACE-Battery-Machine-Learning-Li-DFT/releases/download/paper-v1.0/Reproducibility_Archive.zip)** |
+[Release and checksum](https://github.com/xiaohuang-6/Li-MACE-Battery-Machine-Learning-Li-DFT/releases/tag/paper-v1.0) |
+[Explore the data](submission_data/README.md) |
+[Model checkpoints](submission_data/models/README.md)
 
-The fixed-geometry adsorption checks are not exhaustive relaxed-site searches.
-The interpolation-path descriptors are not migration barriers, and the
-finite-window trajectories are not used to report diffusion coefficients.
+![DFT lithium adsorption energies and MACE force benchmarks across graphene defect environments](manuscript/figures/scientific_summary_strengthened.png)
 
-## Archive Layout
+Research accompanying **Machine-learning interatomic potentials for battery
+materials: Defect-dependent lithium adsorption and local transferability on
+graphene**, by Yuhan Sun and Xiao Huang. Accepted in *Computational Materials
+Science*. Both authors contributed equally.
 
-- `manuscript/`: article source (including all former SI figures and tables), active figures, and
-  figure-generation scripts.
-- `submission_data/`: path-sanitized datasets, numerical evidence tables,
-  author-trained checkpoints, licenses, and `MANIFEST.sha256`.
-- `review_revision/`: preparation, collection, plotting, and independent
-  consistency-check scripts used for the revision.
-- `structures/`: representative structure files used to prepare the VASP
-  calculations.
-- `REPRODUCIBILITY_ARCHIVE_MANIFEST.md`: inclusion, exclusion, versioning, and
-  traceability policy for this archive.
+## What the study finds
 
-## Verify The Distributed Evidence
+- **Defect-dependent lithium binding.** Across 15 fixed-geometry DFT adsorption
+  calculations, all sampled defective and Si-containing placements bind Li
+  more strongly than the sampled pristine placements. The monovacancy gives
+  the strongest sampled binding.
+- **Force improvements across five environments.** Fine-tuning reduces pooled
+  force RMSE from 450.0 to 267.5 meV per angstrom on 25 independently defined
+  perturbations, a 40.6% reduction, with improvements in every structural family.
+- **Structure-specific training targets.** Direct DFT tests of MD snapshots
+  resolve the contrast between Si-containing environments and strained carbon
+  near monovacancies, identifying concrete configurations for further labeling.
 
-Run the following commands from the extracted archive root:
+The five environments are pristine graphene, monovacancy, divacancy,
+Stone-Wales, and a local Si4-on-graphene motif. The figure shows adsorption
+energies, family-resolved force errors, displacement-amplitude dependence, and
+the finite-temperature snapshot comparison.
+
+## Download the paper archive
+
+The release asset is the **exact Supplementary Data ZIP prepared for the
+article**, preserved byte for byte. It is publicly downloadable without a
+GitHub account. For journal production, use `Reproducibility_Archive.zip` from
+the release assets rather than GitHub's automatically generated source ZIP.
+
+```bash
+curl -fL -O https://github.com/xiaohuang-6/Li-MACE-Battery-Machine-Learning-Li-DFT/releases/download/paper-v1.0/Reproducibility_Archive.zip
+curl -fL -O https://github.com/xiaohuang-6/Li-MACE-Battery-Machine-Learning-Li-DFT/releases/download/paper-v1.0/SHA256SUMS.txt
+sha256sum -c SHA256SUMS.txt
+unzip Reproducibility_Archive.zip
+cd Li-vasp_reproducibility_fdf568c
+```
+
+On macOS, use `shasum -a 256 -c SHA256SUMS.txt` for the checksum step.
+
+The archive is pinned to source commit
+[`fdf568c`](https://github.com/xiaohuang-6/Li-MACE-Battery-Machine-Learning-Li-DFT/tree/fdf568c664115c6535c480374d6a97b032cdef79).
+Its original directory name is retained. README improvements on `main` do not
+change this paper-specific snapshot.
+
+## Verify the results package
+
+From the extracted archive root, run these checks with Python 3.10 or newer:
 
 ```bash
 python review_revision/build_fair_submission_data.py --check
@@ -48,41 +68,61 @@ python review_revision/verify_resubmission_science.py --archive-only
 python review_revision/static_check_manuscript.py --archive-only
 ```
 
-These checks validate file hashes, expected row and frame counts, strict-SCF
-fields, model checkpoint hashes, and numerical consistency between the curated
-tables and manuscript. They do not recompute excluded VASP calculations.
+These CPU-only checks validate the data manifest, model hashes, dataset sizes,
+convergence records, and agreement between numerical evidence and manuscript
+values. They use the distributed results and do not launch simulations or
+submit scheduler jobs.
 
-The article PDFs can be rebuilt with:
+For the current development checkout:
 
 ```bash
-bash manuscript/compile_manuscript.sh
+git clone https://github.com/xiaohuang-6/Li-MACE-Battery-Machine-Learning-Li-DFT.git
+cd Li-MACE-Battery-Machine-Learning-Li-DFT
 ```
 
-A working LaTeX engine and the packages imported by the source files are
-required.
+## Data and models
 
-The Git checkout also contains the second-resubmission instructions in
-`review_revision/R2_REVISION_NOTES.md`. The R2 article includes all former SI
-figures and tables. The marked PDF is generated against the submitted R1 source,
-and response locations are generated from the clean PDF's line labels.
-Submission-administration tools and notes are omitted from the journal data archive.
+| Resource | Contents |
+| --- | --- |
+| [DFT datasets](submission_data/datasets/) | 273 configurations, original and group-held-out split definitions |
+| [Relaxed structures](submission_data/structures/relaxed/) | Five reference geometries |
+| [Adsorption references](submission_data/results/d3_site_adsorption_energies.csv) | 15 PBE-D3(BJ) calculations with slab dipole corrections |
+| [Independent force benchmark](submission_data/results/balanced_perturbation_force_summary.csv) | 25 predefined perturbations, five per family |
+| [MD force-validation configurations](submission_data/results/high_displacement_dft.extxyz) | Nine configurations with DFT force labels |
+| [Extended snapshot evidence](submission_data/results/extended_snapshot_dft_evidence.csv) | Seven additional DFT calculations |
+| [Trained MACE models](submission_data/models/README.md) | Five checkpoints, their roles, sizes, and SHA256 hashes |
+| [Analysis and plotting](review_revision/) | Scripts for benchmarks, figures, and numerical verification |
+| [Article source](manuscript/li_mace_graphene_draft.tex) | Main manuscript, including all six figures and eight tables |
 
-## Models And Data
+The foundation model is MACE-MPA-0. Its official download and exact checksum,
+along with the MACE versions used for fine-tuning, are documented in the
+[model guide](submission_data/models/README.md). Model inference requires a
+compatible MACE/PyTorch environment; load serialized checkpoints only from
+trusted sources.
 
-`submission_data/models/` contains the five author-trained checkpoints used in
-the article. The MACE-MPA-0 foundation checkpoint is not duplicated; its
-official source, byte size, and SHA256 hash are recorded in
-`submission_data/models/README.md`.
+All scientific figures and summary tables are in the main article.
+Supplementary Data supplies the underlying configurations, labels, models,
+tables, and code. Adsorption comparisons use fixed geometries; path scans
+describe energy spans, and MD traces describe finite-window displacement.
 
-The curated scientific data are licensed under CC BY 4.0. Workflow and analysis
-code are licensed under MIT. See `submission_data/DATA_LICENSE.md` and
-`LICENSE`.
+## Cite the work
 
-## Excluded Files
+Yuhan Sun and Xiao Huang. *Machine-learning interatomic potentials for battery
+materials: Defect-dependent lithium adsorption and local transferability on
+graphene*. Computational Materials Science, accepted, 2026.
 
-Licensed VASP POTCAR files and large runtime products such as raw OUTCAR,
-WAVECAR, CHGCAR, trajectories, and machine-local environments are not
-redistributed. The evidence tables retain source-output hashes, parsed values,
-convergence fields, and provenance sufficient to audit every reported row.
-Full exclusion and traceability details are given in
-`REPRODUCIBILITY_ARCHIVE_MANIFEST.md`.
+For a reproducible software/data reference, cite the
+[paper-v1.0 release](https://github.com/xiaohuang-6/Li-MACE-Battery-Machine-Learning-Li-DFT/releases/tag/paper-v1.0)
+and its source commit. Bibliographic details will be updated when the final
+article DOI is available.
+
+## Licenses and reuse
+
+Analysis and workflow code: [MIT](LICENSE).
+Curated data and author-trained checkpoints: [CC BY 4.0](submission_data/DATA_LICENSE.md).
+
+Licensed VASP potentials and large raw runtime files are not part of the
+distribution. See the [archive manifest](REPRODUCIBILITY_ARCHIVE_MANIFEST.md)
+for included files and provenance. Open an
+[issue](https://github.com/xiaohuang-6/Li-MACE-Battery-Machine-Learning-Li-DFT/issues) for questions about the
+distributed code or data.
